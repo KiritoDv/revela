@@ -22,13 +22,12 @@
     right: h("div", { class: "stack" }),
     vote: h("section", { class: "card", id: "votar" }),
     voteBody: h("div"),
-    quote: h("div"),
     news: h("section", { class: "card", id: "noticias" }),
     results: h("section", { class: "card", id: "resultados" }),
     dates: h("section", { class: "card", id: "fechas" }),
     recent: h("section", { class: "card", id: "muro" })
   };
-  el.vote.append(h("div", { class: "card-head" }, h("h2", { class: "display", text: "Deja tu predicción" })), el.voteBody, el.quote);
+  el.vote.append(h("div", { class: "card-head" }, h("h2", { class: "display", text: "Deja tu predicción" })), el.voteBody);
 
   async function load() {
     try {
@@ -92,6 +91,7 @@
       x.append(h("div", { class: "countdown" }, d > 1 ? ["Faltan ", h("b", { text: String(d) }), " días"]
         : d === 1 ? ["¡Falta ", h("b", { text: "1" }), " día!"] : ["¡Ya ", h("b", { text: "casi" }), " llega!"]));
     }
+    if (ev.message) x.append(h("blockquote", { class: "quote" }, h("span", { text: "“" + ev.message + "”" }), h("cite", { text: "— " + ev.parents })));
     if (ev.revealed_team) x.append(h("div", { class: "revealed-banner", text: TEAMS[ev.revealed_team].reveal + " " + TEAMS[ev.revealed_team].icon }));
     x.append(h("div", { class: "hero-actions" },
       h("button", { class: "btn primary", type: "button", text: "Compartir", onclick: () => R.share(R.guestUrl(slug), ev.baby_name) }),
@@ -107,8 +107,6 @@
       el.voteBody.textContent = "";
       el.voteBody.append(R.predictionForm({ slug, ev, mine: S.mine, onSaved: m => { S.mine = m; S.formKey = [ev.revealed_team, ev.voting_open, ev.due_date, true].join("|"); refresh(); } }));
     }
-    el.quote.textContent = "";
-    if (ev.message) el.quote.append(h("blockquote", { class: "quote" }, h("span", { text: "“" + ev.message + "”" }), h("cite", { text: "— " + ev.parents })));
   }
 
   function renderNews() {

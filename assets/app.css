@@ -131,6 +131,7 @@ textarea.input { resize: vertical; min-height: 92px; }
 .counter { font-size: .75rem; color: var(--ink-3); text-align: right; }
 .error-msg { color: var(--danger); font-size: .9rem; margin-top: 10px; min-height: 1.2em; }
 .quote { margin: 18px 0 0; padding: 14px 16px; border-left: 3px solid var(--accent); background: var(--paper-2); border-radius: 0 14px 14px 0; font-family: "Fraunces", Georgia, serif; font-style: italic; color: var(--ink-2); }
+.hero .quote { max-width: 520px; margin: 18px auto 0; text-align: left; }
 .quote cite { display: block; margin-top: 6px; font-style: normal; font-family: "Instrument Sans", system-ui, sans-serif; font-size: .875rem; color: var(--ink-3); }
 
 /* ---------- mi predicción ---------- */
