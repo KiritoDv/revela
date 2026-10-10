@@ -14,8 +14,8 @@
  * guarda en este navegador, ideal para probar el flujo completo.
  */
 window.REVELA_CONFIG = {
-  SUPABASE_URL: "",
-  SUPABASE_ANON_KEY: "",
+  SUPABASE_URL: "https://ajggdzvbcrgmdhshhoqf.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_-bozT40hnC2adBO64hUGoA_0zGNE_aP",
 
   // Nombre que aparece en el pie de página y en la pestaña del navegador
   BRAND: "Revela",
