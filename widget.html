@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es" data-theme="clasico">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deja tu predicción</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  body { background: transparent; min-height: 0; }
+  .widget { max-width: 460px; margin: 0 auto; padding: 12px; }
+  .widget .card { padding: 18px; }
+  .w-head { text-align: center; margin-bottom: 14px; }
+  .w-head h1 { font-family: "Fraunces", Georgia, serif; font-style: italic; font-weight: 500; font-size: 2rem; }
+  .w-foot { text-align: center; margin-top: 12px; font-size: .85rem; }
+</style>
+</head>
+<body>
+<div class="widget" id="app"><div class="card"><div class="skeleton" style="height:300px"></div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="assets/api.js"></script>
+<script src="assets/ui.js"></script>
+<script src="assets/form.js"></script>
+<script>
+(function () {
+  "use strict";
+  const R = window.Revela, { h, TEAMS } = R;
+  const slug = R.param("e") || "demo";
+  const api = R.api(slug);
+  const app = document.getElementById("app");
+
+  function bars(preds) {
+    const st = R.stats(preds);
+    return h("div", { class: "bars", style: { marginTop: "16px" } }, Object.values(TEAMS).map(t => h("div", null,
+      h("div", { class: "bar-top" }, h("span", { text: t.icon + " " + t.short }), h("b", { text: st.pct(t.key) + "%" })),
+      h("div", { class: "bar " + t.key }, h("span", { style: { width: st.pct(t.key) + "%" } })))));
+  }
+
+  async function load() {
+    const ev = await api.getEvent(slug);
+    if (!ev) { app.textContent = ""; app.append(h("div", { class: "card empty", text: "Esta revelación no existe." })); return; }
+    document.documentElement.dataset.theme = ev.theme || "clasico";
+    if (ev.revealed_team) document.documentElement.dataset.revealed = ev.revealed_team;
+    const [mine, preds] = await Promise.all([api.getMyPrediction(slug), api.listPredictions(ev.id)]);
+    const results = h("div");
+    const showResults = list => { results.textContent = ""; results.append(h("div", { class: "eyebrow", style: { marginTop: "18px" }, text: list.length + " predicciones" }), bars(list)); };
+    app.textContent = "";
+    app.append(h("div", { class: "card" },
+      h("div", { class: "w-head" }, h("div", { class: "eyebrow", text: ev.revealed_team ? TEAMS[ev.revealed_team].reveal : "¿Niño o niña?" }),
+        h("h1", { text: ev.baby_name }), h("div", { class: "muted small", text: "Parto estimado: " + R.fmtDate(ev.due_date) })),
+      R.predictionForm({ slug, ev, mine, compact: true, onSaved: async () => showResults(await api.listPredictions(ev.id)) }),
+      results,
+      h("div", { class: "w-foot" }, h("a", { href: R.guestUrl(slug), target: "_blank", rel: "noopener", text: "Ver la página completa y las noticias →" }))));
+    if (mine || ev.revealed_team) showResults(preds);
+  }
+  load().catch(e => { app.textContent = ""; app.append(h("div", { class: "card empty", text: e.message })); });
+})();
+</script>
+</body>
+</html>
